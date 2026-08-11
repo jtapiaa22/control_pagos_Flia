@@ -73,7 +73,6 @@ export interface Database {
           cuotas_totales: number | null;
           serie_id: string | null;
           origen_pago_id: string | null;
-          ultima_notificacion_enviada: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -109,7 +108,6 @@ export interface Database {
           cuotas_totales?: number | null;
           serie_id?: string | null;
           origen_pago_id?: string | null;
-          ultima_notificacion_enviada?: string | null;
         };
         Relationships: [
           {
@@ -152,6 +150,28 @@ export interface Database {
           user_agent?: string | null;
         };
         Relationships: [];
+      };
+      pago_notificaciones: {
+        Row: {
+          id: string;
+          pago_id: string;
+          dias_antes: number;
+          enviado_at: string;
+        };
+        Insert: {
+          pago_id: string;
+          dias_antes: number;
+        };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "pago_notificaciones_pago_id_fkey";
+            columns: ["pago_id"];
+            isOneToOne: false;
+            referencedRelation: "pagos";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: Record<string, never>;
