@@ -41,9 +41,14 @@ export default async function DashboardPage() {
   const montoVencePronto = vencenPronto.reduce((acc, p) => acc + p.monto, 0);
   const montoVencido = vencidos.reduce((acc, p) => acc + p.monto, 0);
 
-  const pagosDelMes = [...pendientes, ...vencidos].filter(
-    (p) => p.fecha_vencimiento >= esteMes.inicio && p.fecha_vencimiento <= esteMes.fin
-  );
+  const enEsteMes = (fecha: string) =>
+    fecha >= esteMes.inicio && fecha <= esteMes.fin;
+
+  const pendientesEsteMes = pendientes.filter((p) => enEsteMes(p.fecha_vencimiento));
+  const pagosDelMes = [
+    ...pendientesEsteMes,
+    ...vencidos.filter((p) => enEsteMes(p.fecha_vencimiento)),
+  ];
   const pendienteDelMes = pagosDelMes.reduce((acc, p) => acc + p.monto, 0);
 
   const montoPagadoEsteMes = pagadosEsteMes.reduce((acc, p) => acc + p.monto, 0);
@@ -152,7 +157,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
         <div className="mt-2">
-          <PagoList pagos={pendientes.slice(0, 5)} />
+          <PagoList pagos={pendientesEsteMes.slice(0, 5)} />
         </div>
       </div>
 
