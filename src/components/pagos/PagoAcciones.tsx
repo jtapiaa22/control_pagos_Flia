@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, RotateCcw, Trash2 } from "lucide-react";
+import { CheckCircle2, RotateCcw, Trash2, ListX } from "lucide-react";
 import { hoyISO } from "@/lib/format";
-import { cardClass, dangerButtonClass, inputClass, primaryButtonClass, secondaryButtonClass } from "@/lib/ui";
+import { cardClass, dangerButtonClass, errorTextClass, inputClass, primaryButtonClass, secondaryButtonClass } from "@/lib/ui";
 import type { PagoEstado, RecurrenciaTipo } from "@/types/database.types";
 
 export function PagoAcciones({
@@ -22,6 +22,7 @@ export function PagoAcciones({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [eligiendoFecha, setEligiendoFecha] = useState(false);
   const [fechaPago, setFechaPago] = useState(hoyISO());
   const [cantidadCuotas, setCantidadCuotas] = useState("1");
@@ -34,36 +35,53 @@ export function PagoAcciones({
 
   async function confirmarPago() {
     setLoading(true);
+    setError(null);
 
     const cantidad = Math.min(Math.max(Number(cantidadCuotas) || 1, 1), cuotasRestantes);
 
-    if (esCuotas && cantidad > 1) {
-      await fetch(`/api/pagos/${pagoId}/adelantar-cuotas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cantidad, fecha_pago: fechaPago }),
-      });
-    } else {
-      await fetch(`/api/pagos/${pagoId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estado: "pagado", fecha_pago: fechaPago }),
-      });
-    }
+    const res =
+      esCuotas && cantidad > 1
+        ? await fetch(`/api/pagos/${pagoId}/adelantar-cuotas`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cantidad, fecha_pago: fechaPago }),
+          })
+        : await fetch(`/api/pagos/${pagoId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado: "pagado", fecha_pago: fechaPago }),
+          });
 
     setLoading(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? "No se pudo registrar el pago.");
+      return;
+    }
+
     setEligiendoFecha(false);
     router.refresh();
   }
 
   async function reabrir() {
     setLoading(true);
-    await fetch(`/api/pagos/${pagoId}`, {
+    setError(null);
+
+    const res = await fetch(`/api/pagos/${pagoId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ estado: "pendiente", fecha_pago: null }),
     });
+
     setLoading(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? "No se pudo reabrir el pago.");
+      return;
+    }
+
     router.refresh();
   }
 
@@ -72,7 +90,43 @@ export function PagoAcciones({
       return;
     }
     setLoading(true);
-    await fetch(`/api/pagos/${pagoId}`, { method: "DELETE" });
+    setError(null);
+
+    const res = await fetch(`/api/pagos/${pagoId}`, { method: "DELETE" });
+
+    setLoading(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? "No se pudo eliminar el pago.");
+      return;
+    }
+
+    router.push("/pagos");
+    router.refresh();
+  }
+
+  async function eliminarPlanCompleto() {
+    if (
+      !confirm(
+        "¿Eliminar TODAS las cuotas de este plan (pagadas y pendientes)? Esta acción no se puede deshacer."
+      )
+    ) {
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    const res = await fetch(`/api/pagos/${pagoId}/plan-cuotas`, { method: "DELETE" });
+
+    setLoading(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      setError(data?.error ?? "No se pudo eliminar el plan.");
+      return;
+    }
+
     router.push("/pagos");
     router.refresh();
   }
@@ -102,7 +156,10 @@ export function PagoAcciones({
           </button>
           <button
             type="button"
-            onClick={() => setEligiendoFecha(false)}
+            onClick={() => {
+              setEligiendoFecha(false);
+              setError(null);
+            }}
             disabled={loading}
             className="text-sm text-text-secondary hover:text-text-primary"
           >
@@ -129,32 +186,50 @@ export function PagoAcciones({
             </p>
           </div>
         )}
+
+        {error && <p className={`mt-3 ${errorTextClass}`}>{error}</p>}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {estado === "pagado" ? (
-        <button onClick={reabrir} disabled={loading} className={secondaryButtonClass}>
-          <RotateCcw className="h-4 w-4" /> Reabrir
+    <div>
+      <div className="flex flex-wrap gap-2">
+        {estado === "pagado" ? (
+          <button onClick={reabrir} disabled={loading} className={secondaryButtonClass}>
+            <RotateCcw className="h-4 w-4" /> Reabrir
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              setFechaPago(hoyISO());
+              setCantidadCuotas("1");
+              setError(null);
+              setEligiendoFecha(true);
+            }}
+            disabled={loading}
+            className={primaryButtonClass}
+          >
+            <CheckCircle2 className="h-4 w-4" /> Marcar como pagado
+          </button>
+        )}
+        <button onClick={eliminar} disabled={loading} className={dangerButtonClass}>
+          <Trash2 className="h-4 w-4" /> Eliminar
         </button>
-      ) : (
-        <button
-          onClick={() => {
-            setFechaPago(hoyISO());
-            setCantidadCuotas("1");
-            setEligiendoFecha(true);
-          }}
-          disabled={loading}
-          className={primaryButtonClass}
-        >
-          <CheckCircle2 className="h-4 w-4" /> Marcar como pagado
-        </button>
+        {esCuotas && (
+          <button onClick={eliminarPlanCompleto} disabled={loading} className={dangerButtonClass}>
+            <ListX className="h-4 w-4" /> Eliminar todo el plan
+          </button>
+        )}
+      </div>
+      {esCuotas && (
+        <p className="mt-2 text-xs text-text-tertiary">
+          &quot;Eliminar&quot; borra solo esta cuota. &quot;Eliminar todo el
+          plan&quot; borra las {cuotasTotales} cuotas completas, pagadas y
+          pendientes.
+        </p>
       )}
-      <button onClick={eliminar} disabled={loading} className={dangerButtonClass}>
-        <Trash2 className="h-4 w-4" /> Eliminar
-      </button>
+      {error && <p className={`mt-2 ${errorTextClass}`}>{error}</p>}
     </div>
   );
 }
