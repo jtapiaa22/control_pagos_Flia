@@ -82,6 +82,14 @@ export default async function DetallePagoPage({
             {recurrenciaLabels[pago.recurrencia]}
           </dd>
         </div>
+        {pago.recurrencia === "cuotas" && (
+          <div className="flex justify-between">
+            <dt className="text-sm text-text-secondary">Progreso</dt>
+            <dd className="text-sm font-medium text-text-primary">
+              Cuota {pago.cuota_actual} de {pago.cuotas_totales}
+            </dd>
+          </div>
+        )}
         {pago.notas && (
           <div>
             <dt className="text-sm text-text-secondary">Notas</dt>
@@ -104,7 +112,13 @@ export default async function DetallePagoPage({
 
       {esPropio && (
         <div className="mt-4">
-          <PagoAcciones pagoId={pago.id} estado={pago.estado} />
+          <PagoAcciones
+            pagoId={pago.id}
+            estado={pago.estado}
+            recurrencia={pago.recurrencia}
+            cuotaActual={pago.cuota_actual}
+            cuotasTotales={pago.cuotas_totales}
+          />
         </div>
       )}
     </div>

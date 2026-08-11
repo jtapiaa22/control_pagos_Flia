@@ -46,6 +46,11 @@ export function PagoCard({ pago }: { pago: Pago }) {
           <span className="truncate">
             {pago.categoria?.nombre ?? "Sin categoría"}
           </span>
+          {pago.recurrencia === "cuotas" && (
+            <span className="shrink-0 rounded-md bg-indigo-100 px-1.5 py-0.5 text-[10px] font-medium text-indigo-700">
+              Cuota {pago.cuota_actual}/{pago.cuotas_totales}
+            </span>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-1 text-xs text-text-secondary">

@@ -63,6 +63,24 @@ export async function listarPagos(filtros: PagoFiltros = {}) {
   return unaFilaPorServicio(data);
 }
 
+// Todas las filas pagadas con fecha_pago en el rango dado, SIN colapsar por
+// serie (a diferencia de listarPagos) — necesario para que "pagado este
+// mes" sume bien incluso si se adelantaron varias cuotas de una misma
+// serie dentro del mismo mes (listarPagos mostraría solo una).
+export async function listarPagosPagadosEnRango(desde: string, hasta: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("pagos")
+    .select(PAGO_SELECT)
+    .eq("estado", "pagado")
+    .gte("fecha_pago", desde)
+    .lte("fecha_pago", hasta)
+    .order("fecha_pago", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function obtenerPago(id: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

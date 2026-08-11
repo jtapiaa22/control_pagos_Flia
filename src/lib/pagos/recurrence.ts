@@ -7,6 +7,7 @@ export const recurrenciaLabels: Record<RecurrenciaTipo, string> = {
   trimestral: "Trimestral",
   semestral: "Semestral",
   anual: "Anual",
+  cuotas: "Cuotas",
 };
 
 const mesesPorTipo: Record<RecurrenciaTipo, number | null> = {
@@ -16,6 +17,7 @@ const mesesPorTipo: Record<RecurrenciaTipo, number | null> = {
   trimestral: 3,
   semestral: 6,
   anual: 12,
+  cuotas: 1,
 };
 
 // Mirrors public.calcular_proxima_fecha (supabase/migrations/0003) — used

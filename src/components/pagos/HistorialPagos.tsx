@@ -7,6 +7,8 @@ import type { Pago } from "@/types/domain";
 export function HistorialPagos({ historial }: { historial: Pago[] }) {
   if (historial.length === 0) return null;
 
+  const esSerieDeCuotas = historial.some((p) => p.recurrencia === "cuotas");
+
   return (
     <div className={`mt-4 ${cardClass}`}>
       <h2 className="text-sm font-medium text-text-primary">
@@ -17,6 +19,9 @@ export function HistorialPagos({ historial }: { historial: Pago[] }) {
           <thead>
             <tr className="text-xs text-text-tertiary">
               <th className="pb-2 pr-3 font-medium">Vencimiento</th>
+              {esSerieDeCuotas && (
+                <th className="pb-2 pr-3 font-medium">Cuota</th>
+              )}
               <th className="pb-2 pr-3 font-medium">Estado</th>
               <th className="pb-2 pr-3 font-medium">Pagado el</th>
               <th className="pb-2 font-medium">Monto</th>
@@ -33,6 +38,13 @@ export function HistorialPagos({ historial }: { historial: Pago[] }) {
                     {formatFecha(p.fecha_vencimiento)}
                   </Link>
                 </td>
+                {esSerieDeCuotas && (
+                  <td className="py-2 pr-3 text-text-secondary">
+                    {p.recurrencia === "cuotas"
+                      ? `${p.cuota_actual}/${p.cuotas_totales}`
+                      : "—"}
+                  </td>
+                )}
                 <td className="py-2 pr-3">
                   <EstadoBadge estado={p.estado} />
                 </td>
