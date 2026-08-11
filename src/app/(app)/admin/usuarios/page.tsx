@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { UserPlus, Receipt } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { primaryButtonClass } from "@/lib/ui";
 
 export default async function UsuariosPage() {
   const supabase = await createClient();
@@ -13,45 +14,40 @@ export default async function UsuariosPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h1 className="font-display text-h2 font-semibold tracking-heading text-text-primary">
             Familia
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">
+          <p className="mt-1 text-sm text-text-secondary">
             Cuentas con acceso a Control de Pagos.
           </p>
         </div>
-        <Link
-          href="/admin/usuarios/nuevo"
-          className="flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
-        >
+        <Link href="/admin/usuarios/nuevo" className={primaryButtonClass}>
           <UserPlus className="h-4 w-4" />
           Nuevo miembro
         </Link>
       </div>
 
-      <ul className="mt-6 divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900">
+      <ul className="mt-6 divide-y divide-border-subtle overflow-hidden rounded-lg border border-border-subtle bg-surface-card">
         {usuarios?.map((u) => (
           <li key={u.id} className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-text-primary">
                 {u.nombre_completo}
               </p>
-              <p className="text-xs text-gray-500 dark:text-neutral-400">
-                {u.email}
-              </p>
+              <p className="text-xs text-text-secondary">{u.email}</p>
             </div>
             <div className="flex items-center gap-3">
               <Link
                 href={`/pagos?miembro=${u.id}`}
-                className="flex items-center gap-1 text-xs text-indigo-600 hover:underline dark:text-indigo-400"
+                className="flex items-center gap-1 text-xs text-text-link hover:text-text-link-hover hover:underline"
               >
                 <Receipt className="h-3.5 w-3.5" /> Ver pagos
               </Link>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                   u.role === "admin"
-                    ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400"
-                    : "bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400"
+                    ? "bg-indigo-100 text-indigo-700"
+                    : "bg-surface-sunken text-text-secondary"
                 }`}
               >
                 {u.role === "admin" ? "Admin" : "Miembro"}

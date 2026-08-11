@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Receipt, Settings, Users } from "lucide-react";
+import { LayoutDashboard, ReceiptText, Settings, Users } from "lucide-react";
 
 interface NavItem {
   href: string;
@@ -15,7 +15,7 @@ export function BottomNav({ isAdmin }: { isAdmin: boolean }) {
 
   const items: NavItem[] = [
     { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
-    { href: "/pagos", label: "Pagos", icon: Receipt },
+    { href: "/pagos", label: "Pagos", icon: ReceiptText },
     ...(isAdmin
       ? [{ href: "/admin/usuarios", label: "Familia", icon: Users }]
       : []),
@@ -23,8 +23,8 @@ export function BottomNav({ isAdmin }: { isAdmin: boolean }) {
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 backdrop-blur pb-[env(safe-area-inset-bottom)] md:hidden dark:border-neutral-800 dark:bg-neutral-950/95">
-      <ul className="flex">
+    <nav className="fixed inset-x-0 bottom-0 z-20 h-[62px] border-t border-border-subtle bg-surface-card/95 backdrop-blur pb-[env(safe-area-inset-bottom)] md:hidden">
+      <ul className="flex h-full">
         {items.map(({ href, label, icon: Icon }) => {
           const active =
             pathname === href || pathname.startsWith(`${href}/`);
@@ -32,13 +32,11 @@ export function BottomNav({ isAdmin }: { isAdmin: boolean }) {
             <li key={href} className="flex-1">
               <Link
                 href={href}
-                className={`flex flex-col items-center gap-0.5 py-2 text-xs ${
-                  active
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-gray-500 dark:text-neutral-400"
+                className={`flex h-full flex-col items-center justify-center gap-0.5 text-xs ${
+                  active ? "text-text-accent" : "text-text-tertiary"
                 }`}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
                 {label}
               </Link>
             </li>

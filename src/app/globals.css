@@ -1,26 +1,250 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------
+ * Design tokens ported from the "Saldo" design system (shared design,
+ * see project README). Warm paper neutrals + deep evergreen ("pino")
+ * primary — a money app, not a dashboard. No dark mode was defined by
+ * the source system, so this app is intentionally light-only for now.
+ * ------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base ramps */
+  --paper-50: #fbfaf7;
+  --paper-100: #f7f5f1;
+  --paper-200: #f0ede6;
+  --paper-300: #e4e0d9;
+  --ink-900: #16191c;
+  --ink-800: #23282c;
+  --ink-700: #3a4046;
+  --ink-600: #535b62;
+  --ink-500: #6b747c;
+  --ink-400: #8b939a;
+  --ink-300: #a8b0b6;
+  --ink-200: #c9cfd3;
+
+  /* Primary: "pino" — deep evergreen */
+  --pino-900: #062e27;
+  --pino-800: #0a473d;
+  --pino-700: #0a574b;
+  --pino-600: #0e6b5c;
+  --pino-500: #1a8874;
+  --pino-300: #7fbfb0;
+  --pino-100: #dcede8;
+  --pino-50: #eff7f4;
+
+  /* Amber: upcoming / attention */
+  --amber-700: #8a4e0b;
+  --amber-600: #b8690f;
+  --amber-500: #d98e2b;
+  --amber-300: #efc178;
+  --amber-100: #fbeeda;
+  --amber-50: #fdf7ec;
+
+  /* Clay: overdue / destructive */
+  --clay-700: #8c2c1f;
+  --clay-600: #b03a2b;
+  --clay-500: #c9573f;
+  --clay-300: #e3a294;
+  --clay-100: #f8e4e0;
+  --clay-50: #fcf1ee;
+
+  /* Indigo: informational, links, scheduled */
+  --indigo-700: #1f3f73;
+  --indigo-600: #2c5aa8;
+  --indigo-500: #4478c9;
+  --indigo-300: #9bbbe6;
+  --indigo-100: #e2ebf7;
+  --indigo-50: #f1f6fc;
+
+  /* Semantic aliases */
+  --surface-page: var(--paper-100);
+  --surface-card: #ffffff;
+  --surface-sunken: var(--paper-200);
+  --surface-inverse: var(--ink-900);
+  --surface-accent-soft: var(--pino-100);
+  --surface-hover: var(--paper-200);
+  --surface-pressed: var(--paper-300);
+
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-600);
+  --text-tertiary: var(--ink-400);
+  --text-inverse: var(--paper-50);
+  --text-accent: var(--pino-700);
+  --text-link: var(--indigo-600);
+  --text-link-hover: var(--indigo-700);
+
+  --border-subtle: var(--paper-300);
+  --border-strong: var(--ink-200);
+  --border-focus: var(--pino-600);
+
+  --action-primary: var(--pino-600);
+  --action-primary-hover: var(--pino-700);
+  --action-primary-pressed: var(--pino-800);
+  --action-primary-text: var(--paper-50);
+  --action-danger: var(--clay-600);
+  --action-danger-hover: var(--clay-700);
+
+  /* Payment status — the core semantic system of the product */
+  --status-paid-fg: var(--pino-700);
+  --status-paid-bg: var(--pino-100);
+  --status-paid-dot: var(--pino-600);
+  --status-due-fg: var(--amber-700);
+  --status-due-bg: var(--amber-100);
+  --status-due-dot: var(--amber-500);
+  --status-overdue-fg: var(--clay-700);
+  --status-overdue-bg: var(--clay-100);
+  --status-overdue-dot: var(--clay-600);
+  --status-scheduled-fg: var(--indigo-700);
+  --status-scheduled-bg: var(--indigo-100);
+  --status-scheduled-dot: var(--indigo-600);
+
+  /* Category accents */
+  --cat-luz: var(--amber-500);
+  --cat-agua: var(--indigo-500);
+  --cat-wifi: var(--pino-500);
+  --cat-alquiler: var(--ink-700);
+  --cat-gas: var(--clay-500);
+  --cat-otros: var(--ink-400);
+  --cat-expensas: var(--ink-700);
+  --cat-streaming: var(--pino-300);
+  --cat-tarjeta: var(--indigo-700);
+  --cat-cuotas: var(--amber-700);
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+  --font-display: var(--font-bricolage);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-paper-50: var(--paper-50);
+  --color-paper-100: var(--paper-100);
+  --color-paper-200: var(--paper-200);
+  --color-paper-300: var(--paper-300);
+  --color-ink-900: var(--ink-900);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-ink-500: var(--ink-500);
+  --color-ink-400: var(--ink-400);
+  --color-ink-300: var(--ink-300);
+  --color-ink-200: var(--ink-200);
+
+  --color-pino-900: var(--pino-900);
+  --color-pino-800: var(--pino-800);
+  --color-pino-700: var(--pino-700);
+  --color-pino-600: var(--pino-600);
+  --color-pino-500: var(--pino-500);
+  --color-pino-300: var(--pino-300);
+  --color-pino-100: var(--pino-100);
+  --color-pino-50: var(--pino-50);
+
+  --color-amber-700: var(--amber-700);
+  --color-amber-600: var(--amber-600);
+  --color-amber-500: var(--amber-500);
+  --color-amber-300: var(--amber-300);
+  --color-amber-100: var(--amber-100);
+  --color-amber-50: var(--amber-50);
+
+  --color-clay-700: var(--clay-700);
+  --color-clay-600: var(--clay-600);
+  --color-clay-500: var(--clay-500);
+  --color-clay-300: var(--clay-300);
+  --color-clay-100: var(--clay-100);
+  --color-clay-50: var(--clay-50);
+
+  --color-indigo-700: var(--indigo-700);
+  --color-indigo-600: var(--indigo-600);
+  --color-indigo-500: var(--indigo-500);
+  --color-indigo-300: var(--indigo-300);
+  --color-indigo-100: var(--indigo-100);
+  --color-indigo-50: var(--indigo-50);
+
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-inverse: var(--surface-inverse);
+  --color-surface-accent-soft: var(--surface-accent-soft);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-pressed: var(--surface-pressed);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-accent: var(--text-accent);
+  --color-text-link: var(--text-link);
+  --color-text-link-hover: var(--text-link-hover);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
+
+  --color-action-primary: var(--action-primary);
+  --color-action-primary-hover: var(--action-primary-hover);
+  --color-action-primary-pressed: var(--action-primary-pressed);
+  --color-action-primary-text: var(--action-primary-text);
+  --color-action-danger: var(--action-danger);
+  --color-action-danger-hover: var(--action-danger-hover);
+
+  --color-status-paid-fg: var(--status-paid-fg);
+  --color-status-paid-bg: var(--status-paid-bg);
+  --color-status-paid-dot: var(--status-paid-dot);
+  --color-status-due-fg: var(--status-due-fg);
+  --color-status-due-bg: var(--status-due-bg);
+  --color-status-due-dot: var(--status-due-dot);
+  --color-status-overdue-fg: var(--status-overdue-fg);
+  --color-status-overdue-bg: var(--status-overdue-bg);
+  --color-status-overdue-dot: var(--status-overdue-dot);
+  --color-status-scheduled-fg: var(--status-scheduled-fg);
+  --color-status-scheduled-bg: var(--status-scheduled-bg);
+  --color-status-scheduled-dot: var(--status-scheduled-dot);
+
+  --color-cat-luz: var(--cat-luz);
+  --color-cat-agua: var(--cat-agua);
+  --color-cat-wifi: var(--cat-wifi);
+  --color-cat-alquiler: var(--cat-alquiler);
+  --color-cat-gas: var(--cat-gas);
+  --color-cat-otros: var(--cat-otros);
+  --color-cat-expensas: var(--cat-expensas);
+  --color-cat-streaming: var(--cat-streaming);
+  --color-cat-tarjeta: var(--cat-tarjeta);
+  --color-cat-cuotas: var(--cat-cuotas);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+
+  --text-display: 44px;
+  --text-h1: 32px;
+  --text-h2: 24px;
+  --text-h3: 19px;
+  --text-h4: 16px;
+  --text-amount-xl: 40px;
+  --text-amount-lg: 28px;
+  --text-amount-md: 19px;
+
+  --tracking-display: -0.03em;
+  --tracking-heading: -0.015em;
+  --tracking-label: 0.02em;
+  --tracking-caps: 0.08em;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface-page);
+  color: var(--text-primary);
+}
+
+/* Los montos siempre con cifras tabulares para que las columnas alineen. */
+.tabular-amount {
+  font-variant-numeric: tabular-nums slashed-zero;
 }

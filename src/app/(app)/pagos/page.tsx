@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { listarPagos, listarCategorias, obtenerPerfil } from "@/lib/pagos/queries";
 import { PagoList } from "@/components/pagos/PagoList";
 import { FiltrosPagos } from "@/components/pagos/FiltrosPagos";
+import { primaryButtonClass } from "@/lib/ui";
 import type { PagoEstado } from "@/types/database.types";
 
 export default async function PagosPage({
@@ -24,20 +25,17 @@ export default async function PagosPage({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <h1 className="font-display text-h2 font-semibold tracking-heading text-text-primary">
           Pagos
         </h1>
-        <Link
-          href="/pagos/nuevo"
-          className="flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
-        >
+        <Link href="/pagos/nuevo" className={primaryButtonClass}>
           <Plus className="h-4 w-4" />
           Nuevo pago
         </Link>
       </div>
 
       {miembro && (
-        <div className="mt-3 flex items-center justify-between rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-700 dark:bg-indigo-950 dark:text-indigo-400">
+        <div className="mt-3 flex items-center justify-between rounded-md bg-indigo-50 px-3 py-2 text-sm text-indigo-700">
           <span>
             Viendo los pagos de <strong>{miembro.nombre_completo}</strong>{" "}
             (solo lectura)

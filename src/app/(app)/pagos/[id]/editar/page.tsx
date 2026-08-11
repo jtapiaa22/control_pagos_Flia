@@ -17,7 +17,7 @@ export default async function EditarPagoPage({
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+      <h1 className="font-display text-h2 font-semibold tracking-heading text-text-primary">
         Editar pago
       </h1>
       <div className="mt-6">

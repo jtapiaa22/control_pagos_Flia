@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Share, X } from "lucide-react";
 import { isIOS, isStandalone } from "@/lib/device";
+import { primaryButtonClass } from "@/lib/ui";
 
 const DISMISS_KEY = "control-pagos:install-dismissed-at";
 const DISMISS_DAYS = 7;
@@ -64,18 +65,18 @@ export function InstallPrompt() {
   if (visibilidad === "oculto") return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-20 z-30 mx-auto max-w-sm rounded-xl border border-gray-200 bg-white p-4 shadow-lg md:bottom-4 dark:border-neutral-800 dark:bg-neutral-900">
+    <div className="fixed inset-x-4 bottom-20 z-30 mx-auto max-w-sm rounded-lg border border-border-subtle bg-surface-card p-4 shadow-lg md:bottom-4">
       <button
         onClick={dismiss}
-        className="absolute right-2 top-2 text-gray-400 hover:text-gray-600 dark:hover:text-neutral-200"
+        className="absolute right-2 top-2 text-text-tertiary hover:text-text-primary"
         aria-label="Cerrar"
       >
         <X className="h-4 w-4" />
       </button>
 
       {visibilidad === "ios" ? (
-        <div className="pr-4 text-sm text-gray-700 dark:text-neutral-300">
-          <p className="font-medium text-gray-900 dark:text-white">
+        <div className="pr-4 text-sm text-text-secondary">
+          <p className="font-medium text-text-primary">
             Instalá la app en tu iPhone
           </p>
           <p className="mt-1">
@@ -86,16 +87,13 @@ export function InstallPrompt() {
         </div>
       ) : (
         <div className="pr-4">
-          <p className="text-sm font-medium text-gray-900 dark:text-white">
+          <p className="text-sm font-medium text-text-primary">
             Instalá Control de Pagos
           </p>
-          <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">
+          <p className="mt-1 text-sm text-text-secondary">
             Accedé más rápido, como una app.
           </p>
-          <button
-            onClick={install}
-            className="mt-3 flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
+          <button onClick={install} className={`mt-3 ${primaryButtonClass}`}>
             <Download className="h-4 w-4" /> Instalar
           </button>
         </div>

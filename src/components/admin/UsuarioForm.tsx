@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Dices } from "lucide-react";
+import { cardClass, errorTextClass, inputClass, labelClass, primaryButtonClass } from "@/lib/ui";
 
 function generarPassword() {
   const alfabeto =
@@ -52,34 +53,26 @@ export function UsuarioForm() {
 
   if (creado) {
     return (
-      <div className="space-y-4 rounded-xl border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900 dark:bg-emerald-950">
-        <h2 className="font-medium text-emerald-800 dark:text-emerald-300">
-          Cuenta creada
-        </h2>
-        <p className="text-sm text-emerald-700 dark:text-emerald-400">
+      <div className="space-y-4 rounded-lg border border-pino-300 bg-pino-50 p-5">
+        <h2 className="font-medium text-pino-800">Cuenta creada</h2>
+        <p className="text-sm text-pino-700">
           Compartile estos datos por fuera de la app (WhatsApp, en persona,
           etc.). Va a poder cambiar la contraseña una vez que ingrese.
         </p>
-        <dl className="space-y-1 rounded-md bg-white p-3 text-sm dark:bg-neutral-900">
+        <dl className="space-y-1 rounded-md bg-surface-card p-3 text-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-gray-500 dark:text-neutral-400">Email</dt>
-            <dd className="font-mono text-gray-900 dark:text-white">
-              {creado.email}
-            </dd>
+            <dt className="text-text-secondary">Email</dt>
+            <dd className="font-mono text-text-primary">{creado.email}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-gray-500 dark:text-neutral-400">
-              Contraseña temporal
-            </dt>
-            <dd className="font-mono text-gray-900 dark:text-white">
-              {creado.password}
-            </dd>
+            <dt className="text-text-secondary">Contraseña temporal</dt>
+            <dd className="font-mono text-text-primary">{creado.password}</dd>
           </div>
         </dl>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/admin/usuarios")}
-            className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+            className={primaryButtonClass}
           >
             Volver a la lista
           </button>
@@ -90,7 +83,7 @@ export function UsuarioForm() {
               setNombreCompleto("");
               setPassword(generarPassword());
             }}
-            className="text-sm text-emerald-700 hover:underline dark:text-emerald-400"
+            className="text-sm text-pino-700 hover:underline"
           >
             Crear otra cuenta
           </button>
@@ -100,40 +93,31 @@ export function UsuarioForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-    >
+    <form onSubmit={handleSubmit} className={`space-y-4 ${cardClass}`}>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Nombre completo
-        </label>
+        <label className={labelClass}>Nombre completo</label>
         <input
           type="text"
           required
           value={nombreCompleto}
           onChange={(e) => setNombreCompleto(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Email
-        </label>
+        <label className={labelClass}>Email</label>
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Contraseña temporal
-        </label>
+        <label className={labelClass}>Contraseña temporal</label>
         <div className="mt-1 flex gap-2">
           <input
             type="text"
@@ -141,33 +125,25 @@ export function UsuarioForm() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            className={`${inputClass} font-mono`}
           />
           <button
             type="button"
             title="Generar otra"
             onClick={() => setPassword(generarPassword())}
-            className="shrink-0 rounded-md border border-gray-300 px-3 text-gray-600 hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border-subtle text-text-secondary hover:bg-surface-hover"
           >
             <Dices className="h-4 w-4" />
           </button>
         </div>
-        <p className="mt-1 text-xs text-gray-400 dark:text-neutral-500">
+        <p className="mt-1 text-xs text-text-tertiary">
           El miembro podrá cambiarla al ingresar por primera vez.
         </p>
       </div>
 
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <p className={errorTextClass}>{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className={`w-full ${primaryButtonClass}`}>
         {loading ? "Creando…" : "Crear cuenta"}
       </button>
     </form>

@@ -1,5 +1,6 @@
-// One-off script to rasterize the app icon (a checkmark-in-circle mark on an
-// indigo background) into the PNG sizes the PWA manifest and iOS need.
+// One-off script to rasterize the app icon (a checkmark-in-circle mark on a
+// "pino" evergreen background, matching the Saldo design system) into the
+// PNG sizes the PWA manifest and iOS need.
 // Run with: node scripts/generate-icons.mjs
 import sharp from "sharp";
 import { mkdirSync } from "node:fs";
@@ -10,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.join(__dirname, "..", "public", "icons");
 mkdirSync(outDir, { recursive: true });
 
-const BG = "#4f46e5";
+const BG = "#0E6B5C"; // --pino-600
 
 // `rounded`: draws its own rounded-corner background (regular app icon).
 // Maskable/apple icons must be full-bleed squares — the OS applies its own

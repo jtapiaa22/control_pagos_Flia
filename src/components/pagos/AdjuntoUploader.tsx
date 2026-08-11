@@ -78,7 +78,7 @@ export function AdjuntoUploader({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
+      <label className="block text-sm font-medium text-text-secondary">
         Comprobante
       </label>
       {adjuntoPath ? (
@@ -86,7 +86,7 @@ export function AdjuntoUploader({
           <button
             type="button"
             onClick={handleVer}
-            className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+            className="flex items-center gap-1.5 rounded-md border border-border-subtle px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-hover"
           >
             <Paperclip className="h-4 w-4" /> Ver comprobante
           </button>
@@ -94,14 +94,14 @@ export function AdjuntoUploader({
             type="button"
             onClick={handleQuitar}
             disabled={subiendo}
-            className="text-gray-400 hover:text-red-600"
+            className="text-text-tertiary hover:text-action-danger"
             title="Quitar"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
       ) : (
-        <label className="mt-1 flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-dashed border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-800">
+        <label className="mt-1 flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-dashed border-border-strong px-3 py-1.5 text-sm text-text-secondary hover:bg-surface-hover">
           {subiendo ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -117,7 +117,7 @@ export function AdjuntoUploader({
           />
         </label>
       )}
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-xs text-action-danger">{error}</p>}
     </div>
   );
 }

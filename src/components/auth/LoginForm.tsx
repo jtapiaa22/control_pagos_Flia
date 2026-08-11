@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { cardClass, errorTextClass, inputClass, labelClass, primaryButtonClass } from "@/lib/ui";
 
 export function LoginForm() {
   const router = useRouter();
@@ -35,15 +36,9 @@ export function LoginForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-    >
+    <form onSubmit={handleSubmit} className={`space-y-4 ${cardClass}`}>
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700 dark:text-neutral-300"
-        >
+        <label htmlFor="email" className={labelClass}>
           Email
         </label>
         <input
@@ -53,15 +48,12 @@ export function LoginForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700 dark:text-neutral-300"
-        >
+        <label htmlFor="password" className={labelClass}>
           Contraseña
         </label>
         <input
@@ -71,25 +63,17 @@ export function LoginForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
 
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <p className={errorTextClass}>{error}</p>}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className={`w-full ${primaryButtonClass}`}>
         {loading ? "Ingresando…" : "Ingresar"}
       </button>
 
-      <p className="text-center text-xs text-gray-400 dark:text-neutral-500">
+      <p className="text-center text-xs text-text-tertiary">
         Las cuentas las crea el administrador de la familia.
       </p>
     </form>
