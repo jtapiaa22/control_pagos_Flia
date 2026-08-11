@@ -36,8 +36,13 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isPublic = PUBLIC_PATHS.some((p) => path.startsWith(p));
+  // Las rutas API hacen su propia verificación (sesión de usuario o
+  // CRON_SECRET) y deben responder 401/JSON, nunca un redirect HTML a
+  // /login — eso rompe llamadas servidor-a-servidor sin cookies, como el
+  // cron de Vercel o un curl manual.
+  const isApiRoute = path.startsWith("/api/");
 
-  if (!user && !isPublic) {
+  if (!user && !isPublic && !isApiRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", path);

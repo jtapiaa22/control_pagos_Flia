@@ -29,22 +29,24 @@ export default async function UsuariosPage() {
 
       <ul className="mt-6 divide-y divide-border-subtle overflow-hidden rounded-lg border border-border-subtle bg-surface-card">
         {usuarios?.map((u) => (
-          <li key={u.id} className="flex items-center justify-between px-4 py-3">
-            <div>
-              <p className="text-sm font-medium text-text-primary">
+          <li key={u.id} className="flex items-center gap-3 px-4 py-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-text-primary">
                 {u.nombre_completo}
               </p>
-              <p className="text-xs text-text-secondary">{u.email}</p>
+              <p className="truncate text-xs text-text-secondary">{u.email}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-3">
               <Link
                 href={`/pagos?miembro=${u.id}`}
+                title="Ver pagos"
                 className="flex items-center gap-1 text-xs text-text-link hover:text-text-link-hover hover:underline"
               >
-                <Receipt className="h-3.5 w-3.5" /> Ver pagos
+                <Receipt className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Ver pagos</span>
               </Link>
               <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
                   u.role === "admin"
                     ? "bg-indigo-100 text-indigo-700"
                     : "bg-surface-sunken text-text-secondary"
