@@ -30,6 +30,8 @@ interface PagoFormValues {
   fecha_vencimiento: string;
   notas: string;
   recurrencia: RecurrenciaTipo;
+  cuota_actual: string;
+  cuotas_totales: string;
 }
 
 function valoresIniciales(pago?: Pago): PagoFormValues {
@@ -40,6 +42,8 @@ function valoresIniciales(pago?: Pago): PagoFormValues {
     fecha_vencimiento: pago?.fecha_vencimiento ?? hoyISO(),
     notas: pago?.notas ?? "",
     recurrencia: pago?.recurrencia ?? "ninguna",
+    cuota_actual: pago?.cuota_actual ? String(pago.cuota_actual) : "1",
+    cuotas_totales: pago?.cuotas_totales ? String(pago.cuotas_totales) : "",
   };
 }
 
@@ -63,9 +67,23 @@ export function PagoForm({
     setValues((v) => ({ ...v, [key]: value }));
   }
 
+  const esCuotas = values.recurrencia === "cuotas";
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
+
+    if (esCuotas) {
+      const actual = Number(values.cuota_actual);
+      const total = Number(values.cuotas_totales);
+      if (!actual || !total || actual < 1 || actual > total) {
+        setError(
+          "Revisá la cuota actual y el total de cuotas (la actual no puede ser mayor al total)."
+        );
+        return;
+      }
+    }
+
     setLoading(true);
 
     const payload = {
@@ -75,6 +93,8 @@ export function PagoForm({
       fecha_vencimiento: values.fecha_vencimiento,
       notas: values.notas || null,
       recurrencia: values.recurrencia,
+      cuota_actual: esCuotas ? Number(values.cuota_actual) : null,
+      cuotas_totales: esCuotas ? Number(values.cuotas_totales) : null,
     };
 
     const res = await fetch(
@@ -99,9 +119,18 @@ export function PagoForm({
   }
 
   const proximaFecha =
-    values.recurrencia !== "ninguna"
+    values.recurrencia !== "ninguna" && values.recurrencia !== "cuotas"
       ? calcularProximaFecha(values.fecha_vencimiento, values.recurrencia)
       : null;
+
+  const proximaFechaCuota =
+    esCuotas && Number(values.cuota_actual) < Number(values.cuotas_totales)
+      ? calcularProximaFecha(values.fecha_vencimiento, "cuotas")
+      : null;
+  const esUltimaCuota =
+    esCuotas &&
+    Number(values.cuota_actual) > 0 &&
+    Number(values.cuota_actual) === Number(values.cuotas_totales);
 
   return (
     <form onSubmit={handleSubmit} className={`space-y-4 ${cardClass}`}>
@@ -184,10 +213,56 @@ export function PagoForm({
         </div>
       </div>
 
+      {esCuotas && (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Cuota actual</label>
+            <input
+              type="number"
+              min={1}
+              required
+              value={values.cuota_actual}
+              onChange={(e) => set("cuota_actual", e.target.value)}
+              className={`mt-1 ${inputClass}`}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Cuotas totales</label>
+            <input
+              type="number"
+              min={1}
+              required
+              value={values.cuotas_totales}
+              onChange={(e) => set("cuotas_totales", e.target.value)}
+              className={`mt-1 ${inputClass}`}
+            />
+          </div>
+          <p className="col-span-2 text-xs text-text-tertiary">
+            Si ya la venías pagando de antes, poné en qué cuota vas (ej: cuota
+            4 de 12) — no hace falta cargar las anteriores.
+          </p>
+        </div>
+      )}
+
       {proximaFecha && (
         <p className="text-xs text-text-secondary">
           Cuando lo marques como pagado, se va a generar automáticamente el
           próximo vencimiento: {formatFecha(proximaFecha)}.
+        </p>
+      )}
+
+      {esCuotas && esUltimaCuota && (
+        <p className="text-xs text-text-secondary">
+          Es la última cuota — cuando la marques como pagada, el plan se
+          cierra solo.
+        </p>
+      )}
+
+      {esCuotas && proximaFechaCuota && !esUltimaCuota && (
+        <p className="text-xs text-text-secondary">
+          Cuando la marques como pagada, se genera la cuota{" "}
+          {Number(values.cuota_actual) + 1} de {values.cuotas_totales}, con
+          vencimiento {formatFecha(proximaFechaCuota)}.
         </p>
       )}
 

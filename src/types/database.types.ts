@@ -10,7 +10,8 @@ export type RecurrenciaTipo =
   | "bimestral"
   | "trimestral"
   | "semestral"
-  | "anual";
+  | "anual"
+  | "cuotas";
 
 export interface Database {
   public: {
@@ -68,6 +69,8 @@ export interface Database {
           adjunto_path: string | null;
           recurrencia: RecurrenciaTipo;
           recurrencia_activa: boolean;
+          cuota_actual: number | null;
+          cuotas_totales: number | null;
           serie_id: string | null;
           origen_pago_id: string | null;
           ultima_notificacion_enviada: string | null;
@@ -86,6 +89,8 @@ export interface Database {
           adjunto_path?: string | null;
           recurrencia?: RecurrenciaTipo;
           recurrencia_activa?: boolean;
+          cuota_actual?: number | null;
+          cuotas_totales?: number | null;
           serie_id?: string | null;
           origen_pago_id?: string | null;
         };
@@ -100,6 +105,8 @@ export interface Database {
           adjunto_path?: string | null;
           recurrencia?: RecurrenciaTipo;
           recurrencia_activa?: boolean;
+          cuota_actual?: number | null;
+          cuotas_totales?: number | null;
           serie_id?: string | null;
           origen_pago_id?: string | null;
           ultima_notificacion_enviada?: string | null;
