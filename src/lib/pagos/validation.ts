@@ -38,21 +38,28 @@ const cuotasRefineOptions = {
   path: ["cuota_actual"],
 };
 
+// OJO: recurrencia NO lleva .default() acá. Zod aplica los .default() de un
+// campo incluso después de .partial() cuando la clave viene ausente del
+// payload — así que si este default estuviera acá, cada actualización
+// parcial que no toca "recurrencia" (ej: PagoAcciones al marcar como
+// pagado o reabrir, que solo mandan { estado, fecha_pago }) la
+// sobrescribiría en silencio a "ninguna", rompiendo la recurrencia (y, para
+// cuotas, violando el CHECK de la base). El default para altas nuevas se
+// aplica aparte, solo en pagoInputSchema.
 const pagoObjectSchema = z.object({
   nombre: z.string().trim().min(1, "El nombre es obligatorio").max(120),
   monto: z.coerce.number().min(0, "El monto no puede ser negativo"),
   categoria_id: z.string().uuid().nullable().optional(),
   fecha_vencimiento: fechaISO,
   notas: z.string().max(2000).nullable().optional(),
-  recurrencia: z.enum(recurrenciaTipos).default("ninguna"),
+  recurrencia: z.enum(recurrenciaTipos),
   cuota_actual: cuotaNumero,
   cuotas_totales: cuotaNumero,
 });
 
-export const pagoInputSchema = pagoObjectSchema.refine(
-  validarCuotas,
-  cuotasRefineOptions
-);
+export const pagoInputSchema = pagoObjectSchema
+  .extend({ recurrencia: z.enum(recurrenciaTipos).default("ninguna") })
+  .refine(validarCuotas, cuotasRefineOptions);
 
 export type PagoInput = z.infer<typeof pagoInputSchema>;
 
