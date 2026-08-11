@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { inputClass, labelClass, primaryButtonClass } from "@/lib/ui";
 
 export function CambiarPassword() {
   const [password, setPassword] = useState("");
@@ -42,45 +43,35 @@ export function CambiarPassword() {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Nueva contraseña
-        </label>
+        <label className={labelClass}>Nueva contraseña</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Confirmar contraseña
-        </label>
+        <label className={labelClass}>Confirmar contraseña</label>
         <input
           type="password"
           value={confirmacion}
           onChange={(e) => setConfirmacion(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
 
       {mensaje && (
         <p
           className={`text-sm ${
-            mensaje.tipo === "ok"
-              ? "text-emerald-600 dark:text-emerald-400"
-              : "text-red-600 dark:text-red-400"
+            mensaje.tipo === "ok" ? "text-pino-700" : "text-action-danger"
           }`}
         >
           {mensaje.texto}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className={primaryButtonClass}>
         {loading ? "Guardando…" : "Cambiar contraseña"}
       </button>
     </form>

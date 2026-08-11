@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { PagoEstado } from "@/types/database.types";
+import type { Pago } from "@/types/domain";
 
 const PAGO_SELECT = "*, categoria:categorias(id, nombre, icono)";
 
@@ -10,6 +11,40 @@ export interface PagoFiltros {
   // Solo tiene efecto si el caller es admin (RLS pagos_select_admin);
   // para un usuario normal, cualquier consulta ya está limitada a lo suyo.
   userId?: string;
+}
+
+// Colapsa todas las ocurrencias de un mismo servicio (misma serie) a una
+// sola fila: la que no está pagada con vencimiento más próximo (lo más
+// urgente), o si ya está todo pagado, la más reciente. El resto de la
+// historia se ve en la tabla de historial del detalle de cada pago
+// (listarHistorialSerie), no acá — así la lista principal no se llena de
+// ocurrencias viejas de un mismo servicio.
+function unaFilaPorServicio(pagos: Pago[]): Pago[] {
+  const grupos = new Map<string, Pago[]>();
+  for (const p of pagos) {
+    const key = p.serie_id ?? p.id;
+    const grupo = grupos.get(key);
+    if (grupo) grupo.push(p);
+    else grupos.set(key, [p]);
+  }
+
+  const resultado: Pago[] = [];
+  for (const grupo of grupos.values()) {
+    const noPagados = grupo.filter((p) => p.estado !== "pagado");
+    const elegido =
+      noPagados.length > 0
+        ? noPagados.sort((a, b) =>
+            a.fecha_vencimiento.localeCompare(b.fecha_vencimiento)
+          )[0]
+        : grupo.sort((a, b) =>
+            b.fecha_vencimiento.localeCompare(a.fecha_vencimiento)
+          )[0];
+    resultado.push(elegido);
+  }
+
+  return resultado.sort((a, b) =>
+    a.fecha_vencimiento.localeCompare(b.fecha_vencimiento)
+  );
 }
 
 export async function listarPagos(filtros: PagoFiltros = {}) {
@@ -25,7 +60,7 @@ export async function listarPagos(filtros: PagoFiltros = {}) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return unaFilaPorServicio(data);
 }
 
 export async function obtenerPago(id: string) {
@@ -46,6 +81,23 @@ export async function listarCategorias() {
     .from("categorias")
     .select("*")
     .order("orden");
+
+  if (error) throw error;
+  return data;
+}
+
+// Otras ocurrencias del mismo servicio (misma serie), sin incluir la que ya
+// se está viendo. Todo pago pertenece a una serie desde su creación (ver
+// supabase/migrations/0006_serie_id_default.sql), así que esto funciona
+// tanto para recurrentes como para pagos únicos (ahí simplemente da vacío).
+export async function listarHistorialSerie(serieId: string, excluirId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("pagos")
+    .select(PAGO_SELECT)
+    .eq("serie_id", serieId)
+    .neq("id", excluirId)
+    .order("fecha_vencimiento", { ascending: false });
 
   if (error) throw error;
   return data;

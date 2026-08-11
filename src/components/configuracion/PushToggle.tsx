@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell, BellOff, BellRing } from "lucide-react";
 import { registerServiceWorker, urlBase64ToUint8Array } from "@/lib/push/register-sw";
 import { isIOS, isStandalone } from "@/lib/device";
+import { primaryButtonClass, secondaryButtonClass } from "@/lib/ui";
 
 type Estado =
   | "cargando"
@@ -103,7 +104,7 @@ export function PushToggle() {
   return (
     <div>
       {avisoIOS && (
-        <p className="mb-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+        <p className="mb-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700">
           En iPhone, las notificaciones solo funcionan si agregaste la app a
           la pantalla de inicio (Compartir → Agregar a inicio) y la abrís
           desde ahí.
@@ -111,47 +112,37 @@ export function PushToggle() {
       )}
 
       {estado === "cargando" && (
-        <p className="text-sm text-gray-400 dark:text-neutral-500">
-          Verificando…
-        </p>
+        <p className="text-sm text-text-tertiary">Verificando…</p>
       )}
 
       {estado === "no-soportado" && (
-        <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400">
+        <p className="flex items-center gap-2 text-sm text-text-secondary">
           <BellOff className="h-4 w-4" /> Tu navegador no soporta
           notificaciones push.
         </p>
       )}
 
       {estado === "denegado" && (
-        <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400">
+        <p className="flex items-center gap-2 text-sm text-text-secondary">
           <BellOff className="h-4 w-4" /> Bloqueaste las notificaciones.
           Activalas desde la configuración del sitio en tu navegador.
         </p>
       )}
 
       {estado === "suscrito" && (
-        <button
-          onClick={desactivar}
-          disabled={loading}
-          className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-60 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
-        >
-          <BellRing className="h-4 w-4 text-emerald-600" /> Notificaciones
+        <button onClick={desactivar} disabled={loading} className={secondaryButtonClass}>
+          <BellRing className="h-4 w-4 text-pino-600" /> Notificaciones
           activadas
         </button>
       )}
 
       {estado === "no-suscrito" && (
-        <button
-          onClick={activar}
-          disabled={loading}
-          className="flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
-        >
+        <button onClick={activar} disabled={loading} className={primaryButtonClass}>
           <Bell className="h-4 w-4" /> Activar notificaciones
         </button>
       )}
 
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-action-danger">{error}</p>}
     </div>
   );
 }

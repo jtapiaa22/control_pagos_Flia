@@ -33,7 +33,7 @@ export function FiltrosPagos({
       <select
         value={estadoActual ?? ""}
         onChange={(e) => update({ estado: e.target.value })}
-        className="rounded-md border border-gray-300 px-2 py-1.5 text-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+        className="h-9 rounded-md border border-border-subtle bg-surface-card px-2 text-sm text-text-primary outline-none focus:border-border-focus"
       >
         <option value="">Todos los estados</option>
         <option value="pendiente">Pendiente</option>
@@ -43,7 +43,7 @@ export function FiltrosPagos({
       <select
         value={categoriaActual ?? ""}
         onChange={(e) => update({ categoria: e.target.value })}
-        className="rounded-md border border-gray-300 px-2 py-1.5 text-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+        className="h-9 rounded-md border border-border-subtle bg-surface-card px-2 text-sm text-text-primary outline-none focus:border-border-focus"
       >
         <option value="">Todas las categorías</option>
         {categorias.map((c) => (

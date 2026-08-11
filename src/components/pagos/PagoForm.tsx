@@ -2,9 +2,24 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { calcularProximaFecha, recurrenciaLabels } from "@/lib/pagos/recurrence";
-import { formatFecha, hoyISO } from "@/lib/format";
+import {
+  calcularProximaFecha,
+  recurrenciaLabels,
+} from "@/lib/pagos/recurrence";
+import {
+  formatFecha,
+  formatMonto,
+  hoyISO,
+  sanitizeMontoInput,
+} from "@/lib/format";
 import { recurrenciaTipos } from "@/lib/pagos/validation";
+import {
+  cardClass,
+  errorTextClass,
+  inputClass,
+  labelClass,
+  primaryButtonClass,
+} from "@/lib/ui";
 import type { Categoria, Pago } from "@/types/domain";
 import type { RecurrenciaTipo } from "@/types/database.types";
 
@@ -41,7 +56,10 @@ export function PagoForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  function set<K extends keyof PagoFormValues>(key: K, value: PagoFormValues[K]) {
+  function set<K extends keyof PagoFormValues>(
+    key: K,
+    value: PagoFormValues[K],
+  ) {
     setValues((v) => ({ ...v, [key]: value }));
   }
 
@@ -65,7 +83,7 @@ export function PagoForm({
         method: editando ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     const data = await res.json();
@@ -86,47 +104,45 @@ export function PagoForm({
       : null;
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-    >
+    <form onSubmit={handleSubmit} className={`space-y-4 ${cardClass}`}>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Nombre
-        </label>
+        <label className={labelClass}>Nombre</label>
         <input
           type="text"
           required
           placeholder="Ej: Claro, Wifi, Netflix…"
           value={values.nombre}
           onChange={(e) => set("nombre", e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 ${inputClass}`}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-            Monto (ARS)
-          </label>
+          <label className={labelClass}>Monto (ARS)</label>
           <input
-            type="number"
-            min="0"
-            step="0.01"
+            type="text"
+            inputMode="decimal"
             required
+            placeholder="0.00"
             value={values.monto}
-            onChange={(e) => set("monto", e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            onChange={(e) => set("monto", sanitizeMontoInput(e.target.value))}
+            className={`mt-1 ${inputClass}`}
           />
+          {values.monto !== "" &&
+            !Number.isNaN(Number(values.monto)) && (
+              <p className="mt-1 text-xs text-text-tertiary">
+                {formatMonto(Number(values.monto))}
+              </p>
+            )}
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-            Categoría
-          </label>
+          <label className={labelClass}>Categoría</label>
           <select
             value={values.categoria_id}
             onChange={(e) => set("categoria_id", e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            className={`mt-1 ${inputClass}`}
           >
             <option value="">Sin categoría</option>
             {categorias.map((c) => (
@@ -140,25 +156,24 @@ export function PagoForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-            Vencimiento
-          </label>
+          <label className={labelClass}>Vencimiento</label>
           <input
             type="date"
             required
             value={values.fecha_vencimiento}
             onChange={(e) => set("fecha_vencimiento", e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            className={`mt-1 ${inputClass}`}
           />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-            Repetición
-          </label>
+          <label className={labelClass}>Repetición</label>
           <select
             value={values.recurrencia}
-            onChange={(e) => set("recurrencia", e.target.value as RecurrenciaTipo)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            onChange={(e) =>
+              set("recurrencia", e.target.value as RecurrenciaTipo)
+            }
+            className={`mt-1 ${inputClass}`}
           >
             {recurrenciaTipos.map((tipo) => (
               <option key={tipo} value={tipo}>
@@ -170,34 +185,28 @@ export function PagoForm({
       </div>
 
       {proximaFecha && (
-        <p className="text-xs text-gray-500 dark:text-neutral-400">
+        <p className="text-xs text-text-secondary">
           Cuando lo marques como pagado, se va a generar automáticamente el
           próximo vencimiento: {formatFecha(proximaFecha)}.
         </p>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
-          Notas
-        </label>
+        <label className={labelClass}>Notas</label>
         <textarea
           rows={3}
           value={values.notas}
           onChange={(e) => set("notas", e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+          className={`mt-1 w-full rounded-md border border-border-subtle bg-surface-card px-3 py-2 text-sm text-text-primary outline-none focus:border-border-focus focus:ring-2 focus:ring-pino-600/20`}
         />
       </div>
 
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-400">
-          {error}
-        </p>
-      )}
+      {error && <p className={errorTextClass}>{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:opacity-60"
+        className={`w-full ${primaryButtonClass}`}
       >
         {loading ? "Guardando…" : editando ? "Guardar cambios" : "Crear pago"}
       </button>
