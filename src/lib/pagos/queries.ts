@@ -19,7 +19,7 @@ export interface PagoFiltros {
 // historia se ve en la tabla de historial del detalle de cada pago
 // (listarHistorialSerie), no acá — así la lista principal no se llena de
 // ocurrencias viejas de un mismo servicio.
-function unaFilaPorServicio(pagos: Pago[]): Pago[] {
+export function unaFilaPorServicio(pagos: Pago[]): Pago[] {
   const grupos = new Map<string, Pago[]>();
   for (const p of pagos) {
     const key = p.serie_id ?? p.id;
